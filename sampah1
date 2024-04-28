@@ -1,0 +1,52 @@
+import discord
+import random
+import os
+from discord.ext import commands
+import asyncio
+
+with open("token.txt", "r") as f: # Membaca token dari file token.txt
+    token = f.read() # Menyimpan token ke dalam variabel token
+
+intents = discord.Intents.default()
+intents.message_content = True
+
+bot = commands.Bot(command_prefix='$', intents=intents)
+
+# Database resep sederhana
+resep = {
+    'roti': 'Roti yang sudah keras bisa dimakan dengan susu.',
+    'sisa nasi': 'Sisa nasi bisa dijadikan bubur.',
+    # Dapat menambahkan resep lain sesuai kebutuhan
+}
+
+# Database ide kerajinan dari plastik
+kerajinan_plastik = {
+    'botol': "1. Potong bagian atas botol plastik.\n2. tempelkan resleting diantara bagait atas botol plastik dan bagian bawahnya.\n3. Lalu gunakan sebagai kotak pensil.",
+    # Dapat menambahkan lebih banyak ide kerajinan dari plastik
+}
+
+@bot.event
+async def on_ready():
+    print(f'We have logged in as {bot.user}')
+
+@bot.command()
+async def hello(ctx):
+    await ctx.send(f'Hi! I am a bot {bot.user}!')
+
+@bot.command("resep")
+async def resep_daur_ulang(ctx, item: str):
+    # Mengecek apakah item ada dalam database resep
+    if item.lower() in resep:
+        await ctx.send(f"Rekomendasi untuk mengolah {item.capitalize()}: {resep[item.lower()]}")
+    else:
+        await ctx.send(f"Maaf, resep untuk mengolah {item.capitalize()} tidak ditemukan.")
+
+@bot.command("ide_kreatif")
+async def ide(ctx, item: str):
+    # Mengecek apakah ide kerajinan tersedia untuk item tertentu
+    if item.lower() in kerajinan_plastik:
+        await ctx.send(f"Ide untuk membuat kerajinan dari {item.capitalize()}:\n{kerajinan_plastik[item.lower()]}")
+    else:
+        await ctx.send(f"Maaf, ide untuk membuat kerajinan dari {item.capitalize()} tidak ditemukan.")
+
+bot.run(token)
